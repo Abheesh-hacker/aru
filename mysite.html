@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Private</title>
+<style>
+body{
+  margin:0;
+  background:black;
+  color:white;
+  font-family:Arial;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  overflow:hidden;
+  text-align:center;
+}
+
+/* NAME PAGE */
+.nameBox{
+  background:#444;
+  padding:35px;
+  border-radius:15px;
+  box-shadow:0 0 15px #777;
+  width:280px;
+}
+
+/* LOGIN */
+.container{
+  display:none;
+  background:rgba(255,0,100,0.1);
+  border:1px solid #ff0066;
+  padding:35px;
+  border-radius:15px;
+  box-shadow:0 0 20px #ff0066;
+  width:280px;
+}
+
+input{
+  padding:10px;
+  width:100%;
+  margin-top:15px;
+  border:none;
+  border-radius:5px;
+}
+
+button{
+  margin-top:15px;
+  padding:10px;
+  width:100%;
+  border:none;
+  background:#ff0066;
+  color:white;
+  border-radius:5px;
+}
+
+/* FINAL SCREEN */
+.loveScreen{
+  display:none;
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+
+/* EDITABLE MESSAGE */
+#loveText{
+  font-size:28px;
+  color:#ff99bb;
+  margin-bottom:20px;
+  text-align:center;
+}
+
+/* TYPING EFFECT BELOW MESSAGE */
+#nameText{
+  font-size:22px;
+  animation:pulse 2s infinite;
+  text-align:center;
+  margin-top:5px;
+}
+
+/* PULSE */
+@keyframes pulse{
+  0%{transform:scale(1);text-shadow:0 0 8px #ff4d94;}
+  50%{transform:scale(1.1);text-shadow:0 0 20px #ff4d94;}
+  100%{transform:scale(1);text-shadow:0 0 8px #ff4d94;}
+}
+
+/* DARK GRADIENT BG */
+.darkBG{
+  animation:bgMove 15s infinite alternate;
+}
+
+@keyframes bgMove{
+  0%{background:linear-gradient(45deg,#0a0014,#1a0026,#2b003f);}
+  50%{background:linear-gradient(45deg,#1a0026,#2b003f,#0a0014);}
+  100%{background:linear-gradient(45deg,#0a0014,#1a0026,#2b003f);}
+}
+
+/* HEART */
+.heart{
+  position:absolute;
+  font-size:18px;
+  animation:fall linear forwards;
+}
+@keyframes fall{
+  to{transform:translateY(110vh);opacity:0;}
+}
+
+/* SHAKE */
+@keyframes shake{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-7px)}
+  50%{transform:translateX(7px)}
+  75%{transform:translateX(-7px)}
+  100%{transform:translateX(0)}
+}
+.shake{animation:shake .4s;}
+
+/* FLASH */
+.flash{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:pink;
+  opacity:0.2;
+  animation:flash 0.4s;
+}
+@keyframes flash{
+  from{opacity:0.5} to{opacity:0;}
+}
+
+/* STARS */
+.star{
+  position:absolute;
+  font-size:9px;
+  opacity:0.8;
+  animation:twinkle 2s infinite alternate;
+}
+@keyframes twinkle{
+  from{opacity:0.2} to{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<!-- NAME PAGE -->
+<div class="nameBox" id="namePage">
+<h2>Enter Name</h2>
+<input id="username">
+<button onclick="checkName()">Continue</button>
+</div>
+
+<!-- LOGIN PAGE -->
+<div class="container" id="loginBox">
+<h2 id="title">Step 1</h2>
+<input type="password" id="pass">
+<button onclick="checkPass()">Unlock</button>
+</div>
+
+<!-- FINAL SCREEN -->
+<div class="loveScreen" id="loveScreen">
+<div id="loveText"></div>
+<div id="nameText"></div>
+</div>
+
+<script>
+
+/* NAME CHECK */
+function checkName(){
+  let name=username.value.replace(/\s+/g,'').toLowerCase();
+  if(name==="aarti"){
+    document.getElementById("namePage").style.display="none";
+    document.getElementById("loginBox").style.display="block";
+  }else{ alert("Access Denied"); }
+}
+
+/* PASSWORD */
+let step=1;
+const hiddenPass=atob("QUJISVNIRUtMT1ZFQUFSVEk=");
+
+function checkPass(){
+  let input=document.getElementById("pass").value.trim();
+  if(step===1){
+    if(input===hiddenPass){ step=2; document.getElementById("title").innerText="Step 2"; }
+    else{ document.getElementById("loginBox").classList.add("shake"); setTimeout(()=>document.getElementById("loginBox").classList.remove("shake"),400); }
+    document.getElementById("pass").value=""; return;
+  }
+  if(step===2){
+    let now=new Date();
+    let valid=now.getMinutes()+10;
+    if(valid>=60) valid-=60;
+    valid=valid.toString().padStart(2,"0");
+    if(input===valid){ unlockLove(); }
+    else{ alert("Wrong Code"); }
+    document.getElementById("pass").value="";
+  }
+}
+
+/* UNLOCK */
+function unlockLove(){
+  document.body.classList.add("darkBG");
+  let f=document.createElement("div"); f.className="flash"; document.body.appendChild(f);
+  setTimeout(()=>f.remove(),400);
+
+  document.getElementById("loginBox").style.display="none";
+  document.getElementById("loveScreen").style.display="flex";
+
+  startMeter();
+  heartRain();
+  stars();
+  particles();
+  startVibration();
+}
+
+/* LOVE METER */
+function startMeter(){
+  let percent=0;
+  let interval=setInterval(()=>{
+    percent+=10;
+    document.getElementById("loveScreen").querySelector("#loveText").innerHTML="Loading Love...<br>"+percent+"%";
+    if(percent>=100){ clearInterval(interval); document.getElementById("loveScreen").querySelector("#loveText").innerHTML=""; showMessage(); }
+  },220);
+}
+
+/* MESSAGE */
+function showMessage(){
+  // === EDITABLE MESSAGE ===
+  document.getElementById("loveText").innerText = "Hi Aarti, this is your special message ❤️";
+  // === TYPING EFFECT BELOW ===
+  let name="MISS YOU JAAN", i=0;
+  function type(){
+    if(i<name.length){
+      document.getElementById("nameText").innerHTML+=name.charAt(i);
+      i++; setTimeout(type,200);
+    }
+  }
+  type();
+}
+
+/* HEART RAIN */
+function heartRain(){
+  setInterval(()=>{
+    let h=document.createElement("div");
+    h.className="heart"; h.innerText="❤";
+    h.style.left=Math.random()*100+"vw"; h.style.top="-20px";
+    document.body.appendChild(h); setTimeout(()=>h.remove(),3500);
+  },700);
+}
+
+/* TAP EXPLOSION */
+document.addEventListener("click",e=>{ explode(e.clientX,e.clientY); });
+document.addEventListener("touchstart",e=>{ let t=e.touches[0]; explode(t.clientX,t.clientY); });
+function explode(x,y){
+  for(let i=0;i<8;i++){
+    let h=document.createElement("div"); h.className="heart"; h.innerText="❤";
+    h.style.left=x+"px"; h.style.top=y+"px";
+    document.body.appendChild(h); setTimeout(()=>h.remove(),1200);
+  }
+}
+
+/* HEART TRAIL */
+let lastTrail=0;
+document.addEventListener("touchmove",e=>{
+  let now=Date.now(); if(now-lastTrail<120) return; lastTrail=now;
+  let t=e.touches[0]; let h=document.createElement("div"); h.className="heart"; h.innerText="❤";
+  h.style.left=t.clientX+"px"; h.style.top=t.clientY+"px";
+  document.body.appendChild(h); setTimeout(()=>h.remove(),700);
+});
+
+/* STARS */
+function stars(){
+  for(let i=0;i<20;i++){
+    let s=document.createElement("div"); s.className="star"; s.innerText="✦";
+    s.style.left=Math.random()*100+"vw"; s.style.top=Math.random()*100+"vh";
+    document.body.appendChild(s);
+  }
+}
+
+/* PARTICLES */
+function particles(){
+  setInterval(()=>{
+    let p=document.createElement("div"); p.className="star"; p.innerText="✨";
+    p.style.left=Math.random()*100+"vw";
+    document.body.appendChild(p); setTimeout(()=>p.remove(),2500);
+  },900);
+}
+
+/* VIBRATION */
+function startVibration(){ if(!navigator.vibrate) return; navigator.vibrate([200,100,200]); }
+
+</script>
+</body>
+</html>
